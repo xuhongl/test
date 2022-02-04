@@ -1,0 +1,5 @@
+version: v0.1
+testName: 1-basic-http-test
+testPlan: 1-basic-http-test.jmx
+description: 'Basic HTTP test'
+engineInstances: number_instance

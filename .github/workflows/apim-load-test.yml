@@ -1,0 +1,50 @@
+name: APIM Load Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      config_file:
+        description: 'Name of the test (without .yaml at the end)'
+        required: true
+      service_name:
+        description: 'APIM service short name (without http(s):// and .azure-api.net)'
+        required: true
+      number_instance:
+        description: 'Number of ALT instances'
+        required: true
+
+jobs:
+  loadTest:
+    name: Load Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub Actions 
+        uses: actions/checkout@v2
+          
+      - name: Login to Azure
+        uses: azure/login@v1
+        continue-on-error: false
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Configure test
+        run: sed -i 's/number_instance/${{ github.event.inputs.number_instance }}/g' ${{ github.workspace }}/tests/${{ github.event.inputs.config_file }}/${{ github.event.inputs.config_file }}.yaml && cat ${{ github.workspace }}/tests/${{ github.event.inputs.config_file }}/${{ github.event.inputs.config_file }}.yaml
+      
+      - name: Run test
+        uses: azure/load-testing@v1
+        with:
+          loadTestConfigFile: ${{ github.workspace }}/tests/${{ github.event.inputs.config_file }}/${{ github.event.inputs.config_file }}.yaml
+          loadTestResource: ${{ secrets.LOAD_TEST_RESOURCE }}
+          resourceGroup: ${{ secrets.LOAD_TEST_RESOURCE_GROUP }}
+          env: |
+            [
+                {
+                "name": "service_name",
+                "value": "${{ github.event.inputs.service_name }}"
+                }
+            ]
+      
+      - uses: actions/upload-artifact@v2
+        with:
+          name: loadTestResults
+          path: ${{ github.workspace }}/loadTest

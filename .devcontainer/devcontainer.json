@@ -1,0 +1,16 @@
+{
+    "name": "Codespaces Apim github pages",
+    "extensions": [
+		"vscode-icons-team.vscode-icons",
+        "ms-azuretools.vscode-docker",
+        "ms-azuretools.vscode-apimanagement",
+        "ms-azuretools.vscode-bicep",
+        "humao.rest-client",
+        "ms-vscode.azurecli",
+        "yzhang.markdown-all-in-one"
+    ],
+    "dockerFile": "Dockerfile",
+    "settings": {
+        "terminal.integrated.shell.linux": "/usr/bin/zsh",
+    }
+}
